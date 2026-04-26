@@ -9,7 +9,6 @@ from config import (SUPPORTED_VIDEO_FORMATS, SUPPORTED_IMAGE_FORMATS,
 
 log = logging.getLogger("preprocessor")
 
-
 class Preprocessor:
     def __init__(self):
         self.has_ffmpeg  = shutil.which("ffmpeg")  is not None

@@ -1,21 +1,10 @@
 # ═══════════════════════════════════════════════════
 # Agent Vision Pipeline — Requirements
 # ═══════════════════════════════════════════════════
-# Setup:
-#   pip install -r requirements.txt
-#   sudo apt install ffmpeg          (required for audio extraction)
-#
-# Optional (faster inference):
-#   pip install flash-attn --no-build-isolation
-#
-# Env vars:
-#   export GROQ_API_KEY="..."        (free: console.groq.com)
-#   export OPENROUTER_API_KEY="..."  (optional fallback)
+# NOTE: DO NOT install torch/torchvision. They are already on the system.
 # ═══════════════════════════════════════════════════
 
-# Core Vision — SmolVLM2
-torch>=2.1.0
-torchvision>=0.16.0
+# Core Vision — SmolVLM2 (Requires torch already installed)
 transformers>=4.49.0
 accelerate>=0.27.0
 Pillow>=10.0.0
@@ -36,5 +25,5 @@ requests>=2.31.0
 # Browser agent integration
 playwright>=1.40.0
 
-# Optional: flash attention (much faster inference on CUDA)
-# pip install flash-attn --no-build-isolation
+# VLM API Fallbacks (Added Gemini as primary free-tier fallback)
+google-generativeai>=0.8.0

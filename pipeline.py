@@ -53,7 +53,7 @@ class Pipeline:
         self.cache        = VideoCache(CACHE_DIR)
         self.quota        = QuotaTracker()
         self.preprocessor = Preprocessor()
-        self.vision       = VisionEngine(self.caps)
+        self.vision       = VisionEngine(self.caps, self.quota)
         self.audio        = AudioEngine(self.caps, self.quota)
         log.info("Pipeline ready ✓")
 

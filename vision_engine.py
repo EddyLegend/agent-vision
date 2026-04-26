@@ -61,7 +61,7 @@ Return ONLY raw JSON:
 
 
 class VisionEngine:
-    def __init__(self, caps):
+    def __init__(self, caps, quota):
         self.caps = caps
         self._model     = None
         self._processor = None
@@ -242,6 +242,44 @@ class VisionEngine:
         except Exception as e:
             log.error(f"ask() failed: {e}")
             return f"Error: {e}"
+
+
+def _gemini_fallback_image(self, image_path, mode):
+    try:
+        import google.generativeai as genai
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        from PIL import Image
+        img = Image.open(image_path)
+        response = model.generate_content([PROMPTS.get(mode, PROMPTS["fast"])], img)
+        result = self._parse(response.text)
+        result["provider"] = "gemini_1.5_flash"
+        log.info("Gemini image fallback succeeded")
+        return result
+    except Exception as e:
+        log.warning(f"Gemini image fallback failed: {e}")
+        return {"error": str(e)}
+
+def _gemini_fallback_video(self, video_path, mode):
+    try:
+        import google.generativeai as genai, time
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        vf = genai.upload_file(path=video_path)
+        while vf.state.name == "PROCESSING":
+            time.sleep(2); vf = genai.get_file(vf.name)
+        if vf.state.name == "FAILED": raise ValueError("Gemini video failed")
+        response = model.generate_content([PROMPTS.get(mode, PROMPTS["fast"])], vf)
+        result = self._parse(response.text)
+        result["provider"] = "gemini_1.5_flash"
+        try: genai.delete_file(vf.name)
+        except: pass
+        log.info("Gemini video fallback succeeded")
+        return result
+    except Exception as e:
+        log.warning(f"Gemini video fallback failed: {e}")
+        return {"error": str(e)}
+
 
     def _api_fallback_video(self, video_path: str, mode: str) -> dict:
         if not self.caps.has_openrouter:

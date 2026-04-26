@@ -8,7 +8,6 @@ from config import QUOTA_LIMITS, QUOTA_FILE
 
 log = logging.getLogger("quota")
 
-
 class QuotaTracker:
     def __init__(self):
         self._file = Path(QUOTA_FILE)

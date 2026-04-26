@@ -23,17 +23,18 @@ class SystemCaps:
 
     # Local tools
     has_ffmpeg:          bool = False
-    has_decord:          bool = False    # required for SmolVLM2 video
-    has_flash_attn:      bool = False    # optional, speeds up inference
-    has_faster_whisper:  bool = False    # local audio fallback
+    has_decord:          bool = False
+    has_flash_attn:      bool = False
+    has_faster_whisper:  bool = False
 
     # API keys
     has_groq:        bool = False
     has_openrouter:  bool = False
+    has_gemini:      bool = False  # Added Gemini
 
     # Decisions
-    vision_model:   str = ""  # "large"|"small"|"cpu_large"|"cpu_small"
-    audio_provider: str = ""  # "groq"|"local"|"none"
+    vision_model:   str = ""
+    audio_provider: str = ""
 
     warnings: list = field(default_factory=list)
     info:     list = field(default_factory=list)
@@ -42,12 +43,10 @@ class SystemCaps:
 def check() -> SystemCaps:
     caps = SystemCaps()
 
-    # WSL2
     caps.is_wsl2 = "microsoft" in platform.uname().release.lower()
     if caps.is_wsl2:
         caps.info.append("Running in WSL2")
 
-    # CUDA / GPU
     try:
         import torch
         if torch.cuda.is_available():
@@ -67,14 +66,12 @@ def check() -> SystemCaps:
     except ImportError:
         caps.warnings.append("PyTorch not installed: pip install torch")
 
-    # decord (required for SmolVLM2 video)
     try:
         import decord
         caps.has_decord = True
     except ImportError:
         caps.warnings.append("decord not installed! Fix: pip install decord")
 
-    # flash-attn (optional)
     try:
         import flash_attn
         caps.has_flash_attn = True
@@ -82,28 +79,25 @@ def check() -> SystemCaps:
     except ImportError:
         caps.info.append("flash-attn not installed (optional)")
 
-    # ffmpeg
     caps.has_ffmpeg = shutil.which("ffmpeg") is not None
     if not caps.has_ffmpeg:
         caps.warnings.append("ffmpeg not found. Fix: sudo apt install ffmpeg")
 
-    # faster-whisper
     try:
         import faster_whisper
         caps.has_faster_whisper = True
     except ImportError:
         caps.info.append("faster-whisper not installed (optional local audio)")
 
-    # API keys
     caps.has_groq       = bool(os.getenv("GROQ_API_KEY"))
     caps.has_openrouter = bool(os.getenv("OPENROUTER_API_KEY"))
+    caps.has_gemini     = bool(os.getenv("GEMINI_API_KEY"))  # Added Gemini
 
     if not caps.has_groq:
         caps.warnings.append(
             "GROQ_API_KEY not set. Free key: https://console.groq.com"
         )
 
-    # Vision model decision (FIXED: Stricter threshold for 6GB cards)
     if caps.has_cuda:
         if caps.vram_free_gb >= VRAM_THRESHOLD_LARGE_GB:
             caps.vision_model = "large"
@@ -116,7 +110,6 @@ def check() -> SystemCaps:
         caps.vision_model = "cpu_large"
         caps.warnings.append("No GPU — SmolVLM2 on CPU (slow)")
 
-    # Audio provider decision
     if caps.has_groq:
         caps.audio_provider = "groq"
     elif caps.has_faster_whisper:
