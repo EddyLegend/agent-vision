@@ -1,0 +1,23 @@
+{
+  "mode": "fast",
+  "from_cache": false,
+  "degraded": false,
+  "processing_sec": 0.91,
+  "providers": {
+    "vision": "all_failed"
+  },
+  "errors": [],
+  "warnings": [],
+  "summary": "",
+  "scenes": [],
+  "objects": [],
+  "text_visible": [],
+  "actions": [],
+  "ui_elements": [],
+  "entities": {},
+  "transcript": "",
+  "segments": [],
+  "language": "",
+  "aligned_events": [],
+  "cached_at": "2026-04-26T15:35:00.408754"
+}

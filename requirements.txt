@@ -1,0 +1,40 @@
+# ═══════════════════════════════════════════════════
+# Agent Vision Pipeline — Requirements
+# ═══════════════════════════════════════════════════
+# Setup:
+#   pip install -r requirements.txt
+#   sudo apt install ffmpeg          (required for audio extraction)
+#
+# Optional (faster inference):
+#   pip install flash-attn --no-build-isolation
+#
+# Env vars:
+#   export GROQ_API_KEY="..."        (free: console.groq.com)
+#   export OPENROUTER_API_KEY="..."  (optional fallback)
+# ═══════════════════════════════════════════════════
+
+# Core Vision — SmolVLM2
+torch>=2.1.0
+torchvision>=0.16.0
+transformers>=4.49.0
+accelerate>=0.27.0
+Pillow>=10.0.0
+num2words                    # required by SmolVLM2 processor
+
+# Video frame handling (SmolVLM2 uses this internally)
+decord>=0.6.0
+
+# Audio — Groq API client (Primary)
+groq>=0.13.0
+
+# Audio — local fallback (Forced to CPU to save VRAM)
+faster-whisper>=1.0.0
+
+# Utilities
+requests>=2.31.0
+
+# Browser agent integration
+playwright>=1.40.0
+
+# Optional: flash attention (much faster inference on CUDA)
+# pip install flash-attn --no-build-isolation
