@@ -1,0 +1,13 @@
+# Model weights (too large for GitHub, must be downloaded separately)
+models/
+
+# Cache and temp files
+.cache/
+.quota.json
+__pycache__/
+*.pyc
+
+# Test outputs
+test_ui.png
+test_real_run.py
+fix_agent_vision.py
